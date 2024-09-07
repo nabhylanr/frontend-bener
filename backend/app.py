@@ -45,10 +45,8 @@ def get_embedding_function():
     return embeddings
 
 def extract_last_percentage(text):
-    # Find all percentages in the string
     percentages = re.findall(r'\d+\.?\d*%', text)
 
-    # Return the last percentage found, or None if there are no percentages
     return percentages[-1] if percentages else None
 
 def query_and_validate(EVAL_PROMPT: str, actual_answer: str, key_answer: str):
@@ -67,7 +65,6 @@ def query_and_validate(EVAL_PROMPT: str, actual_answer: str, key_answer: str):
         kunci_jawaban=key_answer, jawaban_peserta=actual_answer
     )
 
-    # Use OpenAI's GPT model
     model = ChatOpenAI(model="gpt-4")
     evaluation_results_str = model.invoke(prompt)
     evaluation_results_str_cleaned = evaluation_results_str.content
@@ -78,15 +75,20 @@ def query_and_validate(EVAL_PROMPT: str, actual_answer: str, key_answer: str):
     print("============================")
     print(last_percentage)
 
-    percentage_float = float(last_percentage.replace('%', ''))
-    return percentage_float
+    if last_percentage is None:
+        return None  
 
+    try:
+        percentage_float = float(last_percentage.replace('%', ''))
+        return percentage_float
+    except ValueError:
+        return None  
 
 def grade_answer(answer_key, user_answer, tolerance=0.01):
+    if answer_key is None or user_answer is None:
+        return False
     return abs(answer_key - user_answer) <= tolerance
     
-
-
 @app.route("/api/submit-answers", methods=["POST"])
 def submit_answers():
     data = request.json
@@ -97,39 +99,37 @@ def submit_answers():
     answer5 = data.get("answer5")
     answer7 = data.get("answer7")
 
-    # print(type(answer1))
-    # print(answer2)
-    # print(answer3)
+    print(answer1)
+    print(answer2)
+    print(answer3)
     print(answer4)
-    # print(answer5)
-    # print(answer7)
-
+    print(answer5)
+    print(answer7)
 
     incorrect_messages = []
     total_score = 0
 
-  # Checking answers
-    if answer1 != slope:
+    if not grade_answer(slope, answer1):
         incorrect_messages.append("Slope salah")
     else:
         total_score += 25 / 3
 
-    if answer2 != intercept:
+    if not grade_answer(intercept, answer2):
         incorrect_messages.append("Intercept salah")
     else:
         total_score += 25 / 3
 
-    if answer3 != r_squared:
+    if not grade_answer(r_squared, answer3):
         incorrect_messages.append("R-Squared salah")
     else:
         total_score += 25 / 3
 
-    if answer5 != coefficient:
+    if not grade_answer(coefficient, answer5):
         incorrect_messages.append("Coefficient Correlation salah")
     else:
         total_score += 25
 
-    if answer7 != prediction:
+    if not grade_answer(prediction, answer7):
         incorrect_messages.append("Prediction salah")
     else:
         total_score += 25 / 2
@@ -160,7 +160,6 @@ def submit_answers():
     return jsonify({
         "status": status,
         "message": message,
-        "similarity_description": nilai
     })
 
 if __name__ == "__main__":
