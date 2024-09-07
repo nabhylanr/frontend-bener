@@ -106,33 +106,32 @@ def submit_answers():
     print(answer5)
     print(answer7)
 
-    incorrect_messages = []
-    total_score = 0
+    results = []
 
     if not grade_answer(slope, answer1):
-        incorrect_messages.append("Slope salah")
+        results.append("1a. salah")
     else:
-        total_score += 25 / 3
+        results.append("1a. benar")
 
     if not grade_answer(intercept, answer2):
-        incorrect_messages.append("Intercept salah")
+        results.append("1b. salah")
     else:
-        total_score += 25 / 3
+        results.append("1b. benar")
 
     if not grade_answer(r_squared, answer3):
-        incorrect_messages.append("R-Squared salah")
+        results.append("1c. salah")
     else:
-        total_score += 25 / 3
+        results.append("1c. benar")
 
     if not grade_answer(coefficient, answer5):
-        incorrect_messages.append("Coefficient Correlation salah")
+        results.append("2. salah")
     else:
-        total_score += 25
+        results.append("2. benar")
 
     if not grade_answer(prediction, answer7):
-        incorrect_messages.append("Prediction salah")
+        results.append("4a. salah")
     else:
-        total_score += 25 / 2
+        results.append("4a. benar")
 
     EVAL_PROMPT = """
     Kunci Jawaban: {kunci_jawaban}
@@ -147,18 +146,12 @@ def submit_answers():
     2. Dari persamaan regresi di atas terlihat bahwa setiap kenaikan biaya iklan sebesar satu juta rupiah akan meningkatkan nilai penjualan sebesar 5.2 juta rupiah. Jika tidak ada biaya iklan maka nilai penjualannya menjadi negatif yaitu -6 juta rupiah. Tetapi hal ini tidak mungkin terjadi dalam kasus riil. 
     3. Model regresi mempunyai koefisien determinasi sebesar 0.9941 yang menunjukkan 99.41% variasi dalam penjualan dapat dijelaskan oleh hubungan linier dengan biaya iklan. Hal ini menunjukkan bahwa model regresi mempunya performa yang baik dalam memprediksi nilai penjualan berdasarkan besarnya biaya iklan."""
     
-
     nilai = query_and_validate(EVAL_PROMPT, answer4, kunci_jawaban)
 
-    if not incorrect_messages:
-        status = "success"
-        message = f"Semua jawaban benar! Total: {total_score:.2f}."
-    else:
-        status = "error"
-        message = f"{len(incorrect_messages)} jawaban salah: " + ", ".join(incorrect_messages) + f". Total: {total_score:.2f}. Similarity string: {nilai}"
+    message = ", ".join(results)
 
     return jsonify({
-        "status": status,
+        "status": "success" if len(results) == 5 and "salah" not in message else "error",
         "message": message,
     })
 
