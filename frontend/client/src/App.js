@@ -129,7 +129,7 @@ function App() {
         </div>
 
         {/* <h1>Soal 3</h1> */}
-        
+
         <div>
           <label class="block mb-2 text-sm font-bold text-gray-900 dark:text-white text-xl " for="scatter">Soal 3 - Scatter Plot Penjualan vs Biaya Iklan</label>
           <input class="block w-full mb-5 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="scatter" type="file"
@@ -165,9 +165,12 @@ function App() {
 
         <div className="response">
           {responseMessage && (
-            <p className={responseStatus === 'success' ? 'success' : 'error'}>
-              {responseMessage}
-            </p>
+            <p
+              className={responseStatus === 'success' ? 'success' : 'error'}
+              dangerouslySetInnerHTML={{
+                __html: responseMessage.replace(/\n/g, '<br />'),
+              }}
+            ></p>
           )}
         </div>
       </div>
