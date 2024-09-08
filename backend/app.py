@@ -98,6 +98,7 @@ def submit_answers():
     answer4 = data.get("answer4")
     answer5 = data.get("answer5")
     answer7 = data.get("answer7")
+    answer8 = data.get("answer8")
 
     print(answer1)
     print(answer2)
@@ -105,6 +106,7 @@ def submit_answers():
     print(answer4)
     print(answer5)
     print(answer7)
+    print(answer8)
 
     results = []
 
@@ -147,6 +149,21 @@ def submit_answers():
     3. Model regresi mempunyai koefisien determinasi sebesar 0.9941 yang menunjukkan 99.41% variasi dalam penjualan dapat dijelaskan oleh hubungan linier dengan biaya iklan. Hal ini menunjukkan bahwa model regresi mempunya performa yang baik dalam memprediksi nilai penjualan berdasarkan besarnya biaya iklan."""
     
     nilai = query_and_validate(EVAL_PROMPT, answer4, kunci_jawaban)
+
+    EVAL_PROMPT4 = """
+    Kunci Jawaban: {kunci_jawaban}
+    Jawaban Peserta: {jawaban_peserta}
+    ---
+    Tinjau kesesuaian antara kunci jawaban dengan jawaban perserta per nomor.
+    Berapa persentase jawaban peserta yang sesuai dengan kunci jawaban?
+    """
+
+    kunci_jawaban4 = """
+    1. Persamaan regresi yang menyatakan hubungan antara biaya iklan (juta Rp) (x) dengan penjualan (juta Rp) (y) adalah y=5.2x-6
+    2. Dari persamaan regresi di atas terlihat bahwa setiap kenaikan biaya iklan sebesar satu juta rupiah akan meningkatkan nilai penjualan sebesar 5.2 juta rupiah. Jika tidak ada biaya iklan maka nilai penjualannya menjadi negatif yaitu -6 juta rupiah. Tetapi hal ini tidak mungkin terjadi dalam kasus riil. 
+    3. Model regresi mempunyai koefisien determinasi sebesar 0.9941 yang menunjukkan 99.41% variasi dalam penjualan dapat dijelaskan oleh hubungan linier dengan biaya iklan. Hal ini menunjukkan bahwa model regresi mempunya performa yang baik dalam memprediksi nilai penjualan berdasarkan besarnya biaya iklan."""
+    
+    nilai = query_and_validate(EVAL_PROMPT4, answer8, kunci_jawaban4)
 
     message = ", ".join(results)
 
