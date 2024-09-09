@@ -14,48 +14,36 @@ function App() {
   const [responseMessage, setResponseMessage] = useState('');
   const [responseStatus, setResponseStatus] = useState('');
 
-
-  const handleSubmit = () => {
-    fetch('/api/submit-answers', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        answer1: parseFloat(slope),
-        answer2: parseFloat(intercept),
-        answer3: parseFloat(r_squared),
-        answer4: interpretation,
-        answer5: parseFloat(coefficient),
-        answer6: scatter,
-        answer7: parseFloat(prediction),
-        answer8: recommendation,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setResponseStatus(data.status);
-        setResponseMessage(data.message);
-      })
-      .catch((error) => console.error('Error:', error));
-  };
-
-  //handle file input changes
-  const handleImageChange = (e) => {
-    const selectedFile = e.target.files[0];
-
-    if (selectedFile) {
-      const fileType = selectedFile.type;
-      if (fileType === 'image/jpeg' || fileType === 'image/png') {
-        // set the file state if valid
-        setScatter(selectedFile);
-        console.log('File sudah benar:', selectedFile);
-      } else {
-        alert('Harap unggah file dengan format jpg, jpeg dan png.');
-        e.target.value = '';
-      }
+  const handleFileChange = (event) => {
+    if (event.target.files.length > 0) {
+      setScatter(event.target.files[0]); // Ensure this is a file object
     }
   };
+
+  const handleSubmit = () => {
+    const formData = new FormData();
+
+  formData.append('answer1', !isNaN(parseFloat(slope)) ? parseFloat(slope) : '');
+  formData.append('answer2', !isNaN(parseFloat(intercept)) ? parseFloat(intercept) : '');
+  formData.append('answer3', !isNaN(parseFloat(r_squared)) ? parseFloat(r_squared) : '');
+  formData.append('answer4', interpretation || ''); // Text answers
+  formData.append('answer5', !isNaN(parseFloat(coefficient)) ? parseFloat(coefficient) : '');
+  formData.append('scatter', scatter); // File object
+  formData.append('answer7', !isNaN(parseFloat(prediction)) ? parseFloat(prediction) : '');
+  formData.append('answer8', recommendation || '');
+
+    fetch('/api/submit-answers', {
+        method: 'POST',
+        body: formData, // Use FormData instead of JSON.stringify
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      setResponseStatus(data.status);
+      setResponseMessage(data.message);
+      console.log(data.image_message); // Image upload message
+    })
+    .catch((error) => console.error('Error:', error));
+};
 
   return (
 
@@ -68,8 +56,6 @@ function App() {
           </a>
         </div>
       </nav>
-
-
 
       <div className="App">
         {/* <h1>Soal 1a</h1> */}
@@ -131,10 +117,10 @@ function App() {
         {/* <h1>Soal 3</h1> */}
 
         <div>
-          <label class="block mb-2 text-sm font-bold text-gray-900 dark:text-white text-xl " for="scatter">Soal 3 - Scatter Plot Penjualan vs Biaya Iklan</label>
+          <label class="block mb-2 text-sm font-bold text-gray-900 dark:text-white text-xl " for="scatter" name="scatter">Soal 3 - Scatter Plot Penjualan vs Biaya Iklan</label>
           <input class="block w-full mb-5 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="scatter" type="file"
             accept=".png, .jpg, .jpeg"
-            onChange={handleImageChange} />
+            onChange={handleFileChange} />
         </div>
 
         {/* <h1>Soal 4a</h1> */}
@@ -158,9 +144,9 @@ function App() {
               value={recommendation}
               onChange={(e) => setRecommendation(e.target.value)}
               placeholder="Isi jawaban" />
-
           </div>
         </div>
+
         <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" onClick={handleSubmit}>Submit</button>
 
         <div className="response">
