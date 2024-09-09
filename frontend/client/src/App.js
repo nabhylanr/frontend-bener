@@ -167,9 +167,7 @@ function App() {
           {responseMessage && (
             <p
               className={responseStatus === 'success' ? 'success' : 'error'}
-              dangerouslySetInnerHTML={{
-                __html: responseMessage.replace(/\n/g, '<br />'),
-              }}
+              dangerouslySetInnerHTML={{ __html: responseMessage }}
             ></p>
           )}
         </div>
