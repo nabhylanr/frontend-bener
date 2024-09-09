@@ -111,29 +111,34 @@ def submit_answers():
     results = []
 
     if not grade_answer(slope, answer1):
-        results.append("1a. salah")
+        message1 = "1a. salah"
     else:
-        results.append("1a. benar")
+        message1 = "1a. benar"
+    results.append(message1)
 
     if not grade_answer(intercept, answer2):
-        results.append("1b. salah")
+        message2 = "1a. salah"
     else:
-        results.append("1b. benar")
+        message2 = "1a. benar"
+    results.append(message2)
 
     if not grade_answer(r_squared, answer3):
-        results.append("1c. salah")
+        message3 = "1b. salah"
     else:
-        results.append("1c. benar")
+        message3 = "1b. benar"
+    results.append(message3)
 
     if not grade_answer(coefficient, answer5):
-        results.append("2. salah")
+        message5 = "2. salah"
     else:
-        results.append("2. benar")
+        message5 = "2. benar"
+    results.append(message5)
 
     if not grade_answer(prediction, answer7):
-        results.append("4a. salah")
+        message7 = "4a. salah"
     else:
-        results.append("4a. benar")
+        message7 = "4a. benar"
+    results.append(message7)
 
     EVAL_PROMPT = """
     Kunci Jawaban: {kunci_jawaban}
@@ -148,7 +153,8 @@ def submit_answers():
     2. Dari persamaan regresi di atas terlihat bahwa setiap kenaikan biaya iklan sebesar satu juta rupiah akan meningkatkan nilai penjualan sebesar 5.2 juta rupiah. Jika tidak ada biaya iklan maka nilai penjualannya menjadi negatif yaitu -6 juta rupiah. Tetapi hal ini tidak mungkin terjadi dalam kasus riil. 
     3. Model regresi mempunyai koefisien determinasi sebesar 0.9941 yang menunjukkan 99.41% variasi dalam penjualan dapat dijelaskan oleh hubungan linier dengan biaya iklan. Hal ini menunjukkan bahwa model regresi mempunya performa yang baik dalam memprediksi nilai penjualan berdasarkan besarnya biaya iklan."""
     
-    nilai = query_and_validate(EVAL_PROMPT, answer4, kunci_jawaban)
+    nilai4 = query_and_validate(EVAL_PROMPT, answer4, kunci_jawaban)
+    message4 = f"1c. {nilai4}"
 
     EVAL_PROMPT4 = """
     Kunci Jawaban: {kunci_jawaban}
@@ -163,13 +169,14 @@ def submit_answers():
     2. Dari persamaan regresi di atas terlihat bahwa setiap kenaikan biaya iklan sebesar satu juta rupiah akan meningkatkan nilai penjualan sebesar 5.2 juta rupiah. Jika tidak ada biaya iklan maka nilai penjualannya menjadi negatif yaitu -6 juta rupiah. Tetapi hal ini tidak mungkin terjadi dalam kasus riil. 
     3. Model regresi mempunyai koefisien determinasi sebesar 0.9941 yang menunjukkan 99.41% variasi dalam penjualan dapat dijelaskan oleh hubungan linier dengan biaya iklan. Hal ini menunjukkan bahwa model regresi mempunya performa yang baik dalam memprediksi nilai penjualan berdasarkan besarnya biaya iklan."""
     
-    nilai = query_and_validate(EVAL_PROMPT4, answer8, kunci_jawaban4)
+    nilai8 = query_and_validate(EVAL_PROMPT4, answer8, kunci_jawaban4)
+    message8 = f"4b. {nilai8}"
 
-    message = ", ".join(results)
+    message = f"{message1}<br>{message2}<br>{message3}<br>{message4}<br>{message5}<br>{message7}<br>{message8}"
 
     return jsonify({
         "status": "success" if len(results) == 5 and "salah" not in message else "error",
-        "message": message,
+        "message": message
     })
 
 if __name__ == "__main__":
