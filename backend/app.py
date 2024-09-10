@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS, cross_origin
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 import numpy as np
@@ -10,6 +11,13 @@ import re
 
 os.environ['OPENAI_API_KEY'] = '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'
 app = Flask(__name__)
+CORS(app)
+cors = CORS(app, resource={
+    r"/*":{
+        "origins":"*"
+    }
+    })
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 # Configure upload folder
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads/')
@@ -100,6 +108,7 @@ def grade_answer(answer_key, user_answer, tolerance=0.01):
     return abs(answer_key - user_answer) <= tolerance
 
 @app.route("/api/submit-answers", methods=["POST"])
+@cross_origin()
 def submit_answers():
     print("Form data received:", request.form)
     print("Files received:", request.files)
@@ -124,11 +133,11 @@ def submit_answers():
             filename = secure_filename(file.filename)
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(file_path)
-            image_upload_message = f"3. File uploaded successfully as {filename}"
+            image_upload_message = f"3. File berhasil diunggah sebagai {filename}"
         else:
-            image_upload_message = "3. Invalid file type"
+            image_upload_message = "3. Jenis file tidak valid"
     else:
-        image_upload_message = "3. No file part"
+        image_upload_message = "3. Tidak ada bagian file"
 
     # Debug output
     print("Answer1:", answer1)
@@ -142,33 +151,33 @@ def submit_answers():
     results = []
 
     if not grade_answer(slope, answer1):
-        message1 = "1a. salah"
+        message1 = "1a. Salah"
     else:
-        message1 = "1a. benar"
+        message1 = "1a. Benar"
     results.append(message1)
 
     if not grade_answer(intercept, answer2):
-        message2 = "1a. salah"
+        message2 = "1a. Salah"
     else:
-        message2 = "1a. benar"
+        message2 = "1a. Benar"
     results.append(message2)
 
     if not grade_answer(r_squared, answer3):
-        message3 = "1b. salah"
+        message3 = "1b. Salah"
     else:
-        message3 = "1b. benar"
+        message3 = "1b. Benar"
     results.append(message3)
 
     if not grade_answer(coefficient, answer5):
-        message5 = "2. salah"
+        message5 = "2. Salah"
     else:
-        message5 = "2. benar"
+        message5 = "2. Benar"
     results.append(message5)
 
     if not grade_answer(prediction, answer7):
-        message7 = "4a. salah"
+        message7 = "4a. Salah"
     else:
-        message7 = "4a. benar"
+        message7 = "4a. Benar"
     results.append(message7)
 
     EVAL_PROMPT = """
@@ -205,7 +214,7 @@ def submit_answers():
 
     message = f"{message1}<br>{message2}<br>{message3}<br>{message4}<br>{message5}<br>{image_upload_message}<br>{message7}<br>{message8}"
     
-    if len(results) == 5 and all(result != "salah" for result in results):
+    if len(results) == 5 and all(result != "Salah" for result in results):
         status = "success"
     else:
         status = "error"
