@@ -287,29 +287,30 @@ def submit_answers():
             filename = secure_filename(file.filename)
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(file_path)
+            scatter = request.files['scatter']
+    
+            # Simpan atau proses file yang diunggah
+            file_path1 = f"./uploads/{scatter.filename}"
+            # scatter.save(file_path1)
+            print("hasil-hasil")
+            print(file_path1)
+            processor, model, device = DINOv2_load()
+
+            image_features1 = DINOv2_extract_image_features('./scatterplot(1).png', processor, model, device, edge_method="canny")
+            image_features2 = DINOv2_extract_image_features(file_path1, processor, model, device, edge_method="canny")
+
+            # Calculate similarity between all pairs of images
+            sim12 = calculate_similarity(image_features1, image_features2)
+            print('Similarity between image 1 and 2:', sim12)
+
+            image_upload_message = f"Nilai simillarity gambar {sim12}"
+
             # image_upload_message = f"3. File berhasil diunggah sebagai {filename}"
         else:
             image_upload_message = "3. Jenis file tidak valid"
     else:
         image_upload_message = "3. Tidak ada bagian file"
 
-    scatter = request.files['scatter']
-    
-    # Simpan atau proses file yang diunggah
-    file_path1 = f"./uploads/{scatter.filename}"
-    # scatter.save(file_path1)
-    print("hasil-hasil")
-    print(file_path1)
-    processor, model, device = DINOv2_load()
-
-    image_features1 = DINOv2_extract_image_features('./scatterplot(1).png', processor, model, device, edge_method="canny")
-    image_features2 = DINOv2_extract_image_features(file_path1, processor, model, device, edge_method="canny")
-
-    # Calculate similarity between all pairs of images
-    sim12 = calculate_similarity(image_features1, image_features2)
-    print('Similarity between image 1 and 2:', sim12)
-
-    image_upload_message = f"Nilai simillarity gambar {sim12}"
 
     # Debug output
     print("Answer1:", answer1)
