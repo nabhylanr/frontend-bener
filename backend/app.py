@@ -237,7 +237,7 @@ def query_and_validate(EVAL_PROMPT: str, actual_answer: str, key_answer: str):
         kunci_jawaban=key_answer, jawaban_peserta=actual_answer
     )
 
-    model = ChatOpenAI(model="gpt-4")
+    model = ChatOpenAI(model="gpt-4o-mini")
     evaluation_results_str = model.invoke(prompt)
     evaluation_results_str_cleaned = evaluation_results_str.content
 
