@@ -280,7 +280,7 @@ def submit_answers():
     answer5 = parse_float(request.form.get("answer5", ''))
     answer7 = parse_float(request.form.get("answer7", ''))
     answer8 = request.form.get("answer8", '')
-
+    score = 0
     if 'scatter' in request.files:
         file = request.files['scatter']
         if file and allowed_file(file.filename):
@@ -305,6 +305,13 @@ def submit_answers():
 
             image_upload_message = f"Nilai simillarity gambar {sim12}"
 
+            nilai_6 = float(sim12)
+
+            if nilai_6 >= 0.83:
+                score = score + 25
+            else:
+                score = score + 0
+
             # image_upload_message = f"3. File berhasil diunggah sebagai {filename}"
         else:
             image_upload_message = "3. Jenis file tidak valid"
@@ -322,35 +329,42 @@ def submit_answers():
     print("Answer8:", answer8)
 
     results = []
+    
 
     if not grade_answer(slope, answer1):
         message1 = "1a. Salah"
     else:
         message1 = "1a. Benar"
+        score = score + 25/6
     results.append(message1)
 
     if not grade_answer(intercept, answer2):
         message2 = "1a. Salah"
     else:
         message2 = "1a. Benar"
+        score = score + 25/6
     results.append(message2)
 
     if not grade_answer(r_squared, answer3):
         message3 = "1b. Salah"
     else:
         message3 = "1b. Benar"
+        score = score + 25/3
+
     results.append(message3)
 
     if not grade_answer(coefficient, answer5):
         message5 = "2. Salah"
     else:
         message5 = "2. Benar"
+        score = score + 25
     results.append(message5)
 
     if not grade_answer(prediction, answer7):
         message7 = "4a. Salah"
     else:
         message7 = "4a. Benar"
+        score = score + 25/2
     results.append(message7)
 
     EVAL_PROMPT = """
@@ -369,6 +383,8 @@ def submit_answers():
     nilai4 = query_and_validate(EVAL_PROMPT, answer4, kunci_jawaban)
     message4 = f"1c. {nilai4}"
 
+    score = score + int(25*nilai4)
+
     EVAL_PROMPT4 = """
     Kunci Jawaban: {kunci_jawaban}
     Jawaban Peserta: {jawaban_peserta}
@@ -383,6 +399,8 @@ def submit_answers():
     nilai8 = query_and_validate(EVAL_PROMPT4, answer8, kunci_jawaban4)
     message8 = f"4b. {nilai8}"
 
+    score = score + int(25*nilai8)
+
     message = f"{message1}<br>{message2}<br>{message3}<br>{message4}<br>{message5}<br>{image_upload_message}<br>{message7}<br>{message8}"
     
     if len(results) == 5 and all(result != "Salah" for result in results):
@@ -392,7 +410,8 @@ def submit_answers():
 
     return jsonify({
         "status": status,
-        "message": message
+        "message": message,
+        "score": score
     })
 
 if __name__ == "__main__":

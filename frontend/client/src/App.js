@@ -13,6 +13,7 @@ function App() {
   const [prediction, setPrediction] = useState('');
   const [recommendation, setRecommendation] = useState('');
   const [responseMessage, setResponseMessage] = useState('');
+  const [responseScore, setResponseScore] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -44,6 +45,7 @@ function App() {
       .then((response) => response.json())
       .then((data) => {
         setResponseMessage(data.message);
+        setResponseScore(data.score); 
 
         setIsLoading(false);
         setIsModalOpen(true);
@@ -132,7 +134,7 @@ function App() {
           <input className="block w-full mb-5 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="scatter" type="file"
             accept=".png, .jpg, .jpeg"
             onChange={handleFileChange} />
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help"> (MAX. 100 MB).</p>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help"> (MAX. 100 MB).</p>
         </div>
 
         {/* <h1>Soal 4a</h1> */}
@@ -197,6 +199,9 @@ function App() {
             <p
               dangerouslySetInnerHTML={{ __html: responseMessage }}
             ></p>
+            {responseScore !== null && (
+              <p><strong>Score:</strong> {responseScore}</p>
+            )}
           </Modal.Body>
           <Modal.Footer>
             <button onClick={() => setIsModalOpen(false)} className="btn-close px-3 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Tutup</button>
