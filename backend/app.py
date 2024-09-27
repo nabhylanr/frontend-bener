@@ -23,7 +23,7 @@ from transformers import AutoImageProcessor, SwinForImageClassification
 from transformers import AutoImageProcessor, ViTMAEModel
 import matplotlib.pyplot as plt
 
-os.environ['OPENAI_API_KEY'] = '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'
+os.environ['OPENAI_API_KEY'] = ''
 app = Flask(__name__)
 CORS(app)
 cors = CORS(app, resource={
@@ -256,7 +256,7 @@ def query_and_validate(EVAL_PROMPT: str, actual_answer: str, key_answer: str):
     except ValueError:
         return None  
 
-def grade_answer(answer_key, user_answer, tolerance=0.01):
+def grade_answer(answer_key, user_answer, tolerance=0.001):
     if answer_key is None or user_answer is None:
         return False
     return abs(answer_key - user_answer) <= tolerance
@@ -383,7 +383,7 @@ def submit_answers():
     nilai4 = query_and_validate(EVAL_PROMPT, answer4, kunci_jawaban)
     message4 = f"1c. {nilai4}"
 
-    score = score + int(25*nilai4)
+    score = score + (25*nilai4)/300
 
     EVAL_PROMPT4 = """
     Kunci Jawaban: {kunci_jawaban}
@@ -399,7 +399,8 @@ def submit_answers():
     nilai8 = query_and_validate(EVAL_PROMPT4, answer8, kunci_jawaban4)
     message8 = f"4b. {nilai8}"
 
-    score = score + int(25*nilai8)
+    score = score + (25*nilai8)/200
+    print(score)
 
     message = f"{message1}<br>{message2}<br>{message3}<br>{message4}<br>{message5}<br>{image_upload_message}<br>{message7}<br>{message8}"
     
